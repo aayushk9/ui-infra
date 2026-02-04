@@ -1,1 +1,37 @@
 thinking loud and speaking to myself here :/
+
+revamping and revisiting core logical building of zora
+
+INPUT BOX // - So we are using the Input Box component in two places: one on the landing page and the second on the /query page. The structure and styling need to 
+be different in both places, so we need a way to differentiate them. When passing a component, we can add props that render conditionally. For example, we need to 
+show suggested prompts on the landing page but not on the query page, so we can add a prop like showSuggestions. On the landing page Input Box, we pass this prop, 
+and inside the component we add a condition: if showSuggestions exists, display the suggestions, otherwise do not. The second differentiating factor between the 
+Input Box on the home page and the query page is the border styling. The landing page input has dual borders, while the query page input has a single border. 
+We can handle this by adding another prop such as outerBorder, and applying conditional styling: if outerBorder is present, display two borders, otherwise display one.
+Lastly, and most importantly, when sending a request, it can be triggered from both places. To refactor this cleanly, we should collect the query through an onSend callback 
+function passed as a prop. So when you see onSend passed into the component, it contains the query submission logic. For example, we can do onSend = handleUserQuery, meaning onSend(query) 
+is the same as calling handleUserQuery(query). We create this handler in the parent and use it to accept input and send it to the backend.
+This works for traditional input being sent directly to the server. However, in the case where the query comes from the landing page, it flows through navigation. 
+The home page Input Box needs to navigate to /query first, since all conversations happen there. So in onSend, we do two things: first navigate, then send the query along through the URL. 
+On the /query page, we extract the query from the URL and pass it into handleUserQuery, which then sends it to the backend.
+
+HOW IS THE SAME QUERY FROM I/P BOX DISPLAYED ON CONVERSATIONS SECTION // -
+--> FLOW
+
+   input box (input, submit, store user enter text inside local state query) -> on Submit (onSend(query)) passing onSend as props helps (if onSend (onSend(query))) -> onSend contains query  
+   -> pass onSend as props to i/p box compoenent when using the component -> onSend = handleUserQuery i.e onSend(query) = handleUserQuery(query) for /query & for landing we pass
+   onSend(query) = landingSend so landingSend navigates with user eneteres query -> till now we user query in url if from home page else inside handleUserQuery. now we send request to backend
+   from handleUserQuery -> first of all we accept input here in handleUserQuery fn and than use it by first assigning it to messages state setMessages(userMessage) -> userMessage =
+   content: input, etc and than -> send request to backend and wait for output as output comes -> we update messages state to setMessages(assistantMessage) which contains
+   ...prev messages (user + assistantMessage if any) and response from serever as content: server response, etc (etc is various things such as message_type user/agent, conversationhistory: false, 
+   selected events only assigned during user query if it is from home page) -> as we now have user message and assistant message inside message zustand store (which has strict type array) ->
+   iterate messages and display both user messages and assistantMessage using message.content
+
+HOW ARE EVENTS DISPLAYED IN THIS MANNER? // -
+-> when /app mounts we have effect which says on mount fetch events from backend -> so we get events on every mount/reload -> events come in a form from jup.ag in its way
+   -> events (contain id, title, makrets, etc) -> we accept from backend events = res.json() -> we only need market logo, title, market options, yes/no percent -> so what we do is
+   store these things in variable which has type wwhich only accepts this such as -> const finalEvents: eventtype[] = events.map((event) => (title: event.title, etc)) so now we have all
+   the data inside finalEvents we assign finalEvents to global state events i.e setEvents(finalEvents) -> we created event card component whic has ideal strcuture and styling for events to
+   be displayed so we do -> events.map ((event) => (<EventCard props and than assign each prop to event. whatever it should be)) -> in short we fetch events from server -> we create a type for events ->
+   assign var of that type and assign those properties to that props for example -> title: event.title -> making sure we assign necessary data from backend to variable -> update local state with these 
+   variable and than -> iterate state and asssign each prop to card component prop
