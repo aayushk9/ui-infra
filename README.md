@@ -16,3 +16,6 @@ js dir/ javascript experiments
 ts dir/ typescript experiments  
 raw solutions dir/ excalidraw problem solving without ai  
 brainstorm dir/ if you wanna know me, start here
+
+
+thinking of adding folder for (web secuirty, web architecture)
