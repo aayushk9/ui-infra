@@ -1,3 +1,5 @@
+FRONTEND MASTERY
+
 this repository exists to understand frontend fundamentals and have fun with frontenda/design engineering
 
 made this repo to explore  
